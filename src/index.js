@@ -1,12 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+import Main from './Main';
 import reportWebVitals from './reportWebVitals';
+import "bootswatch/dist/pulse/bootstrap.min.css";
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <div className='Home'>
+        <Main />
+    </div>
   </React.StrictMode>,
   document.getElementById('root')
 );
