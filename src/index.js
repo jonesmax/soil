@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import Main from './Main';
+import Main from './components/Main';
 import reportWebVitals from './reportWebVitals';
 import "bootswatch/dist/pulse/bootstrap.min.css";
 
