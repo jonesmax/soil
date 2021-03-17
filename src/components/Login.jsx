@@ -66,8 +66,8 @@ class Login extends React.Component {
     render() {
         return(
             <div>
-                {!this.state.user && this.loginForm()} 
-                {this.state.user && <Board user={this.state.user} />}
+                {/* {!this.state.user && this.loginForm()}  */}
+                {!this.state.user && <Board user={this.state.user} />}
             </div>
         );
     }

@@ -8,3 +8,15 @@ a:hover
      text-decoration:none; 
      cursor:pointer;  
 }
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  td, th {
+    border: 1px solid #dddddd;
+    background-color: rgb(243, 243, 243);
+    padding: 5px;
+  }
+  

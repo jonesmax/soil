@@ -4,7 +4,7 @@ import '../css/Main.css';
 
 
 import 'semantic-ui-less/semantic.less';
-import { Icon,Button,Card,Divider,Segment, Input, Label,Loading,Loader, Dimmer } from 'semantic-ui-react';
+import { Icon,Button,Card,Divider,Segment, Input, Label,Loading,Loader, Dimmer,List,Table, Container } from 'semantic-ui-react';
 
 
 
@@ -17,7 +17,9 @@ class Board extends React.Component {
             location: null,
             city: null,
             user:this.props,
-            Loading: true
+            Loading: true,
+            status: 'safe',
+            gdpLevel: 0
             
         }
         
@@ -69,6 +71,108 @@ class Board extends React.Component {
         var today = curHour + ":" + curMinute + curMeridiem + " " + dayOfWeek + " " + dayOfMonth + " " + curMonth + ", " + curYear;
         return today;
     }
+    getDate(date){
+        date = new Date(date);
+        let weekday = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        let dayOfWeek = weekday[date.getDay()];
+        let formatedDate = (date.getMonth()+1)+'/'+(date.getDate() < 10 ? ('0'+date.getDate()): date.getDate()) + ' '+dayOfWeek;
+        return formatedDate;
+    }
+
+    status(){
+        if(this.state.status === 'safe'){
+                return (
+                <div style={{backgroundColor:'lime',padding:'5px'}}>
+                    <h2 style={{textAlign:'center',color:'black'}}>Safe</h2>
+                </div>
+            );
+        }
+        else if(this.state.status === 'warning'){
+                return (
+                <div style={{backgroundColor:'yellow',padding:'5px'}}>
+                    <h2 style={{textAlign:'center',color:'black'}}>Warning</h2>
+                </div>
+            );
+        }
+        else if(this.state.status === 'negative'){
+                return (
+                <div style={{backgroundColor:'red',padding:'5px'}}>
+                    <h2 style={{textAlign:'center',color:'black'}}>Attention</h2>
+                </div>
+            );
+        } 
+    }
+    setGpd(){this.setState({gdpLevel:0})}
+
+    getStatus(item,gdp){
+        console.log('hi');
+        if((gdp+=item.high)>200){
+            // this.setGpd();
+            return 'rgb(0,255,0)';
+        }
+        else{
+            if((gdp+=item.high)>150){
+                return 'rgb(255,0,0,0.4)';
+            }
+            else if((gdp+=item.high)>100){
+                return 'rgb(255,255,0,0.4)';
+            }
+            else{
+                return 'rgb(0,255,0,0.4)';
+            }
+        }
+        
+    }
+
+    tableBoard(){
+
+        let weather = [
+           {date: ('2021-03-10'),high: 19,low:7,filterized: false},
+           {date: ('2021-03-11'),high: 20,low:6,filterized: false},
+           {date: ('2021-03-12'),high: 18,low:7,filterized: false},
+           {date: ('2021-03-13'),high: 17,low:5,filterized: false},
+           {date: ('2021-03-14'),high: 21,low:14,filterized: false},
+           {date: ('2021-03-15'),high: 24,low:10,filterized: false},
+           {date: ('2021-03-16'),high: 19,low:7,filterized: false},
+           {date: ('2021-03-17'),high: 20,low:7,filterized: false},
+           {date: ('2021-03-18'),high: 23,low:11,filterized: false},
+           {date: ('2021-03-19'),high: 20,low:12,filterized: false},
+           {date: ('2021-03-20'),high: 20,low:12,filterized: true},
+
+
+
+
+
+
+
+           
+
+        ];
+        //
+        
+        let gdpLevel = this.state.gdpLevel;
+        return (
+                <table>
+                    <tr>
+                        <th>Date</th>
+                        <th>High</th>
+                        <th>Low</th>
+                        <th>GDP</th>
+                    </tr>
+                    {weather.map(item => 
+                    <tr>
+                        <td>{this.getDate(item.date)}</td>
+                        <td>{item.high}</td>
+                        <td>{item.low}</td>
+                        <td style={{backgroundColor:this.getStatus(item,gdpLevel)}}>{gdpLevel+=item.high}</td>
+                        
+                    </tr>
+                    )}
+                </table>
+
+          
+        )
+    }
 
     App(){
         return(
@@ -84,12 +188,15 @@ class Board extends React.Component {
                     <h2 style={{fontSize:'15px',textAlign:'center'}}>{this.state.weather.main.temp}° in {this.state.location}</h2>
                     }
                 </Card.Header>
-                <Divider></Divider>
-                
+                <Divider style={{marginBottom:'5px'}}></Divider>
+                {this.status()}
+                <Divider style={{marginTop:'5px'}}></Divider>
+                <div style={{width:'100%',height:'100%'}}>
+                    {this.tableBoard()}
+                </div>
             </Card>
 
-            
-            
+
         </div>);
     }
 
