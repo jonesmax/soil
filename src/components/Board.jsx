@@ -13,54 +13,97 @@ class Board extends React.Component {
     constructor() {
         super();
         this.state = {
-            weather: null,
-            location: null,
-            city: null,
             user:this.props,
-            Loading: true,
+            Loading: false,
             status: 'safe',
-            gdpLevel: 0
+            gdpLevel: 0,
+            statusBar: null,
+            location:null,
+            currentReports: [
+                {date: new Date(2021,(3-1),17),high: 22,low:6,filterized: false},
+                {date: new Date(2021,(3-1),18),high: 21,low:7,filterized: false},
+                {date: new Date(2021,(3-1),19),high: 15,low:1,filterized: false},
+                {date: new Date(2021,(3-1),20),high: 2,low:1,filterized: false},
+                {date: new Date(2021,(3-1),21),high: 16,low:4,filterized: false},
+                {date: new Date(2021,(3-1),22),high: 22,low:10,filterized: false},
+                {date: new Date(2021,(3-1),23),high: 22,low:7,filterized: false},
+                {date: new Date(2021,(3-1),24),high: 19,low:7,filterized: false},
+                {date: new Date(2021,(3-1),25),high: 19,low:7,filterized: false},
+                {date: new Date(2021,(3-1),26),high: 12,low:7,filterized: false},
+                {date: new Date(2021,(3-1),27),high: 15,low:1,filterized: false},
+                
+            ]
             
         }
         
     }
-    getCity(){
-        navigator.geolocation.getCurrentPosition((position) => {
-            let lat = JSON.stringify(position.coords.latitude);
-            let long = JSON.stringify(position.coords.longitude);
-            let url = 'https://www.mapquestapi.com/geocoding/v1/reverse?key=Uc8JYIXgBVAJLDLp6kCADuKCP1vjBY9m&location='+lat+'%2C'+long+'&outFormat=json&thumbMaps=false';
-        // you need to bind this so you can use setState
-            let city;
-            axios.get(url)
-            .then(res => {
-                const weather = res.data;
-                city = (weather.results[0].locations[0].adminArea5)+', CA'; 
-                this.setState({city:city});
-                this.getWeather();
-            })
-        });
+
+    calculateWeather(){
+        let weather = this.state.currentReports;
+        
+        let level = 0;
+        weather.forEach(function(item){ 
+             let gdp = level;
+             gdp+= (item.high+item.low)/2;
+ 
+             if(item.filterized){
+                 item.gdp = (item.high+item.low)/2;
+                 item.status = 'rgb(123, 237, 47)';
+                 item.message = 'Safe';
+                 item.color = 'black';
+                 
+             }
+             else if(gdp>=170){
+                 item.gdp = gdp;
+                 item.status = 'red';
+                 item.message = 'Action';
+                 item.color = 'white';
+             }
+             else if(gdp>=120){
+                 item.gdp = gdp;
+                 item.status='rgb(209, 14, 0,0.5)';
+                 item.message = 'Warning';
+                 item.color = 'white';
+                     
+             }
+             else if(gdp>=80){
+                 item.gdp = gdp;
+                 item.status='yellow';
+                 item.message = 'Moderate';
+                 item.color = 'black';
+             }
+             else{
+                 item.gdp = gdp;
+                 item.status='rgb(123, 237, 47)';
+                 item.message = 'Safe';
+                  item.color = 'black';
+             }
+             level = item.gdp;
+         });
+         
+        return weather;
+    }
+    componentDidMount() {
+        this.getWeather();
     }
     getWeather(){
-        let location = this.state.city;
-        this.setState({location:location});
+        console.log('tick');
+        let location = this.props.user.location;
         let url = 'http://api.openweathermap.org/data/2.5/weather?q='+location+'&units=metric&appid=86583fb8344f78f0fdf02aa0d9e1859c';
+        
         axios.get(url)
           .then(res => {
             const weather = res.data;
             this.setState({weather: weather,
-            Loading:false});
+                           Loading:false,
+                           user: this.props.user,
+                           location: location});
         })
     }
-    componentDidMount() {
-        this.getCity();
-        this.setState({user: this.props.user});
-    }
-
     getToday(){
         var objToday = new Date(),
         weekday = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
         dayOfWeek = weekday[objToday.getDay()],
-        
         dayOfMonth =  ( objToday.getDate() < 10) ? '0' + objToday.getDate() : objToday.getDate(),
         months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
         curMonth = months[objToday.getMonth()],
@@ -73,112 +116,45 @@ class Board extends React.Component {
     }
     getDate(date){
         date = new Date(date);
-        let weekday = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        let weekday = ['Sunday','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         let dayOfWeek = weekday[date.getDay()];
-        let formatedDate = (date.getMonth()+1)+'/'+(date.getDate() < 10 ? ('0'+date.getDate()): date.getDate()) + ' '+dayOfWeek;
+        let formatedDate = (date.getMonth()+1)+'/'+(date.getDate() < 9 ? ('0'+date.getDate()): date.getDate()) + ' '+dayOfWeek;
         return formatedDate;
     }
-
-    status(){
-        if(this.state.status === 'safe'){
-                return (
-                <div style={{backgroundColor:'lime',padding:'5px'}}>
-                    <h2 style={{textAlign:'center',color:'black'}}>Safe</h2>
-                </div>
-            );
-        }
-        else if(this.state.status === 'warning'){
-                return (
-                <div style={{backgroundColor:'yellow',padding:'5px'}}>
-                    <h2 style={{textAlign:'center',color:'black'}}>Warning</h2>
-                </div>
-            );
-        }
-        else if(this.state.status === 'negative'){
-                return (
-                <div style={{backgroundColor:'red',padding:'5px'}}>
-                    <h2 style={{textAlign:'center',color:'black'}}>Attention</h2>
-                </div>
-            );
-        } 
-    }
-    setGpd(){this.setState({gdpLevel:0})}
-
-    getStatus(item,gdp){
-        console.log('hi');
-        if((gdp+=item.high)>200){
-            // this.setGpd();
-            return 'rgb(0,255,0)';
-        }
-        else{
-            if((gdp+=item.high)>150){
-                return 'rgb(255,0,0,0.4)';
-            }
-            else if((gdp+=item.high)>100){
-                return 'rgb(255,255,0,0.4)';
-            }
-            else{
-                return 'rgb(0,255,0,0.4)';
-            }
-        }
-        
-    }
-
-    tableBoard(){
-
-        let weather = [
-           {date: ('2021-03-10'),high: 19,low:7,filterized: false},
-           {date: ('2021-03-11'),high: 20,low:6,filterized: false},
-           {date: ('2021-03-12'),high: 18,low:7,filterized: false},
-           {date: ('2021-03-13'),high: 17,low:5,filterized: false},
-           {date: ('2021-03-14'),high: 21,low:14,filterized: false},
-           {date: ('2021-03-15'),high: 24,low:10,filterized: false},
-           {date: ('2021-03-16'),high: 19,low:7,filterized: false},
-           {date: ('2021-03-17'),high: 20,low:7,filterized: false},
-           {date: ('2021-03-18'),high: 23,low:11,filterized: false},
-           {date: ('2021-03-19'),high: 20,low:12,filterized: false},
-           {date: ('2021-03-20'),high: 20,low:12,filterized: true},
-
-
-
-
-
-
-
-           
-
-        ];
-        //
-        
-        let gdpLevel = this.state.gdpLevel;
+    status(weather){
+        let copy = weather;
+        var lastItem = copy[copy.length - 1];
         return (
-                <table>
-                    <tr>
-                        <th>Date</th>
-                        <th>High</th>
-                        <th>Low</th>
-                        <th>GDP</th>
-                    </tr>
-                    {weather.map(item => 
-                    <tr>
+                <div style={{backgroundColor:lastItem.status,padding:'5px'}}>
+                    <h2 style={{textAlign:'center',color:'black'}}>{lastItem.message}</h2>
+                </div>
+        );
+    }
+    tableBoard(weather){
+        return (
+                    weather.map(item => 
+                    <Table.Row key={item.date}>
                         <td>{this.getDate(item.date)}</td>
                         <td>{item.high}</td>
                         <td>{item.low}</td>
-                        <td style={{backgroundColor:this.getStatus(item,gdpLevel)}}>{gdpLevel+=item.high}</td>
+                        <td style={{backgroundColor:item.status,color:item.color}}>{item.gdp}</td>
                         
-                    </tr>
-                    )}
-                </table>
-
-          
+                    </Table.Row>
+                )
         )
+    }
+    ferterlize(weather){
+        weather[weather.length - 1].filterized = true;
+        this.setState({currentReports:weather});
+        
     }
 
     App(){
+        let currentWeatherReports =  this.calculateWeather();
         return(
         <div style={{padding:'30px'}}>
             
-            <Card style={{width:'100%',margin:'auto',padding:'10px',height:'500px'}}>
+            <Card style={{width:'100%',margin:'auto',padding:'10px',maxHeight:'90vh'}}>
             <Dimmer active={this.state.Loading} inverted>
                 <Loader size='medium'>Loading</Loader>
             </Dimmer>
@@ -189,12 +165,29 @@ class Board extends React.Component {
                     }
                 </Card.Header>
                 <Divider style={{marginBottom:'5px'}}></Divider>
-                {this.status()}
+                {this.status(currentWeatherReports)}
                 <Divider style={{marginTop:'5px'}}></Divider>
-                <div style={{width:'100%',height:'100%'}}>
-                    {this.tableBoard()}
+                <div style={{width:'100%'}}>
+                    <div style={{maxHeight:'60vh',overflowY:'auto'}}>
+                        <table>
+                            <Table.Row>
+                                <th>Date</th>
+                                <th>High</th>
+                                <th>Low</th>
+                                <th>GDP</th>
+                            </Table.Row>
+                            <tbody>
+                                {this.tableBoard(currentWeatherReports)}
+                            </tbody>
+                        </table>
+                    </div>
+                <Button.Group style={{width:'100%',padding:'10px',paddingBottom:"0px",marginTop:'2px'}}>
+                    <Button style={{width:'50%'}} color='blue'>Fix</Button>
+                    <Button onClick={() => this.ferterlize(currentWeatherReports)} style={{color:'black',width:'50%'}} color='green'>Fertilze</Button>
+                </Button.Group>
                 </div>
             </Card>
+            <p style={{textAlign:'center',color:'white',padding:'5px'}}><a style={{color:'white',opacity:'50%'}} href = "mailto:maxjones2001@hotmail.com?subject=Help">Need help?</a></p>
 
 
         </div>);
