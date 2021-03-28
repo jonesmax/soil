@@ -2,7 +2,6 @@ import React from 'react';
 import axios from 'axios';
 import '../css/Main.css';
 
-
 import 'semantic-ui-less/semantic.less';
 import { Icon,Button,Card,Divider,Segment, Input, Label,Loading,Loader, Dimmer,List,Table, Container } from 'semantic-ui-react';
 
@@ -19,28 +18,68 @@ class Board extends React.Component {
             gdpLevel: 0,
             statusBar: null,
             location:null,
-            currentReports: [
-                {date: new Date(2021,(3-1),17),high: 22,low:6,filterized: false},
-                {date: new Date(2021,(3-1),18),high: 21,low:7,filterized: false},
-                {date: new Date(2021,(3-1),19),high: 15,low:1,filterized: false},
-                {date: new Date(2021,(3-1),20),high: 2,low:1,filterized: false},
-                {date: new Date(2021,(3-1),21),high: 16,low:4,filterized: false},
-                {date: new Date(2021,(3-1),22),high: 22,low:10,filterized: false},
-                {date: new Date(2021,(3-1),23),high: 22,low:7,filterized: false},
-                {date: new Date(2021,(3-1),24),high: 19,low:7,filterized: false},
-                {date: new Date(2021,(3-1),25),high: 19,low:7,filterized: false},
-                {date: new Date(2021,(3-1),26),high: 12,low:7,filterized: false},
-                {date: new Date(2021,(3-1),27),high: 15,low:1,filterized: false},
-                
-            ]
-            
+            // currentReports: [
+            //     {date: new Date(2021,(3-1),17),high: 22,low:6,filterized: false},
+            //     {date: new Date(2021,(3-1),18),high: 21,low:7,filterized: false},
+            //     {date: new Date(2021,(3-1),19),high: 15,low:1,filterized: false},
+            //     {date: new Date(2021,(3-1),20),high: 2, low:1,filterized: false},
+            //     {date: new Date(2021,(3-1),21),high: 16,low:4,filterized: false},
+            //     {date: new Date(2021,(3-1),22),high: 22,low:9,filterized: false},
+            //     {date: new Date(2021,(3-1),23),high: 22,low:7,filterized: false},
+            //     {date: new Date(2021,(3-1),24),high: 19,low:7,filterized: false},
+            //     {date: new Date(2021,(3-1),25),high: 19,low:7,filterized: false},
+            //     {date: new Date(2021,(3-1),26),high: 12,low:7,filterized: false},
+            //     {date: new Date(2021,(3-1),27),high: 15,low:1,filterized: false},
+            // ]
+            currentReports: [],
         }
         
     }
-
+    getData(user_id){
+        axios.get('http://127.0.0.1:8081/weather/'+user_id )
+        .then(res => {
+          if(res.data){
+              
+              this.setState({currentReports: res.data});
+          }
+          else{
+            console.log("no");
+          }
+      })
+    }
+    formatDate(date) {
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+    
+        if (month.length < 2) 
+            month = '0' + month;
+        if (day.length < 2) 
+            day = '0' + day;
+    
+        return [year, month, day].join('-');
+    }
+    createWeather(data){
+        let weather = {
+            user_id: this.props.user.id,
+            date: this.formatDate(new Date()),
+            high: data.main.temp_max,
+            low: data.main.temp_min,
+        }
+        axios.post('http://127.0.0.1:8081/weather/create',weather )
+        .then(res => {
+          if(res.data){
+              console.log(res);
+          }
+          else{
+             console.log('loser');
+          }
+      })
+    }
     calculateWeather(){
         let weather = this.state.currentReports;
-        
+        console.log(weather);
         let level = 0;
         weather.forEach(function(item){ 
              let gdp = level;
@@ -52,42 +91,41 @@ class Board extends React.Component {
                  item.message = 'Safe';
                  item.color = 'black';
                  
-             }
-             else if(gdp>=170){
+            }
+            else if(gdp>=170){
                  item.gdp = gdp;
                  item.status = 'red';
                  item.message = 'Action';
                  item.color = 'white';
-             }
-             else if(gdp>=120){
+            }
+            else if(gdp>=120){
                  item.gdp = gdp;
                  item.status='rgb(209, 14, 0,0.5)';
                  item.message = 'Warning';
-                 item.color = 'white';
-                     
-             }
-             else if(gdp>=80){
+                 item.color = 'white';         
+            }
+            else if(gdp>=80){
                  item.gdp = gdp;
                  item.status='yellow';
                  item.message = 'Moderate';
                  item.color = 'black';
-             }
-             else{
+            }
+            else{
                  item.gdp = gdp;
                  item.status='rgb(123, 237, 47)';
                  item.message = 'Safe';
                   item.color = 'black';
-             }
-             level = item.gdp;
+            }
+            level = item.gdp;
          });
          
         return weather;
     }
     componentDidMount() {
+        this.getData(this.props.user.id);
         this.getWeather();
     }
     getWeather(){
-        console.log('tick');
         let location = this.props.user.location;
         let url = 'http://api.openweathermap.org/data/2.5/weather?q='+location+'&units=metric&appid=86583fb8344f78f0fdf02aa0d9e1859c';
         
@@ -98,6 +136,7 @@ class Board extends React.Component {
                            Loading:false,
                            user: this.props.user,
                            location: location});
+                           this.createWeather(res.data);
         })
     }
     getToday(){
@@ -144,11 +183,20 @@ class Board extends React.Component {
         )
     }
     ferterlize(weather){
-        weather[weather.length - 1].filterized = true;
-        this.setState({currentReports:weather});
+        let id = weather[weather.length - 1].id;
+        
+        axios.get('http://127.0.0.1:8081/weather/fertilize/'+id )
+        .then(res => {
+          if(res.data){
+             console.log('good?');
+             this.getData(this.props.user.id);
+          }
+          else{
+            console.log('bad?');
+          }
+      })
         
     }
-
     App(){
         let currentWeatherReports =  this.calculateWeather();
         return(
@@ -165,7 +213,7 @@ class Board extends React.Component {
                     }
                 </Card.Header>
                 <Divider style={{marginBottom:'5px'}}></Divider>
-                {this.status(currentWeatherReports)}
+                {/* {(currentWeatherReports===[]) && this.status(currentWeatherReports)} */}
                 <Divider style={{marginTop:'5px'}}></Divider>
                 <div style={{width:'100%'}}>
                     <div style={{maxHeight:'60vh',overflowY:'auto'}}>
@@ -199,10 +247,7 @@ class Board extends React.Component {
                 {this.App()}
             </div>
         );
-    }
-
-       
+    }     
 }
-
 
 export default Board;
