@@ -1,0 +1,24 @@
+{
+  "files": {
+    "main.css": "/soil/static/css/main.8cfdedca.chunk.css",
+    "main.js": "/soil/static/js/main.8d75b14c.chunk.js",
+    "main.js.map": "/soil/static/js/main.8d75b14c.chunk.js.map",
+    "runtime-main.js": "/soil/static/js/runtime-main.dcd741d2.js",
+    "runtime-main.js.map": "/soil/static/js/runtime-main.dcd741d2.js.map",
+    "static/css/2.a9491b83.chunk.css": "/soil/static/css/2.a9491b83.chunk.css",
+    "static/js/2.b7771367.chunk.js": "/soil/static/js/2.b7771367.chunk.js",
+    "static/js/2.b7771367.chunk.js.map": "/soil/static/js/2.b7771367.chunk.js.map",
+    "index.html": "/soil/index.html",
+    "static/css/2.a9491b83.chunk.css.map": "/soil/static/css/2.a9491b83.chunk.css.map",
+    "static/css/main.8cfdedca.chunk.css.map": "/soil/static/css/main.8cfdedca.chunk.css.map",
+    "static/js/2.b7771367.chunk.js.LICENSE.txt": "/soil/static/js/2.b7771367.chunk.js.LICENSE.txt",
+    "static/media/semantic.less": "/soil/static/media/outline-icons.ddae9b1b.woff"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.dcd741d2.js",
+    "static/css/2.a9491b83.chunk.css",
+    "static/js/2.b7771367.chunk.js",
+    "static/css/main.8cfdedca.chunk.css",
+    "static/js/main.8d75b14c.chunk.js"
+  ]
+}
