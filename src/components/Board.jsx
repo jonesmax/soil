@@ -32,11 +32,12 @@ class Board extends React.Component {
             //     {date: new Date(2021,(3-1),27),high: 15,low:1,filterized: false},
             // ]
             currentReports: [],
+            currentWeatherReports: []
         }
         
     }
     getData(user_id){
-        axios.get('http://127.0.0.1:8081/weather/'+user_id )
+        axios.get('http://3.137.214.252:80/weather/'+user_id )
         .then(res => {
           if(res.data){
               
@@ -67,7 +68,7 @@ class Board extends React.Component {
             high: data.main.temp_max,
             low: data.main.temp_min,
         }
-        axios.post('http://127.0.0.1:8081/weather/create',weather )
+        axios.post('http://3.137.214.252:80/weather/create',weather )
         .then(res => {
           if(res.data){
               console.log(res);
@@ -79,17 +80,18 @@ class Board extends React.Component {
     }
     calculateWeather(){
         let weather = this.state.currentReports;
-        console.log(weather);
+      
         let level = 0;
         weather.forEach(function(item){ 
              let gdp = level;
-             gdp+= (item.high+item.low)/2;
+             gdp+= Math.floor((item.high+item.low)/2);
  
-             if(item.filterized){
-                 item.gdp = (item.high+item.low)/2;
-                 item.status = 'rgb(123, 237, 47)';
+             if(item.fertilized){
+                 item.gdp = Math.floor((item.high+item.low)/2);
+                 item.status = 'rgb(255,255,255)';
                  item.message = 'Safe';
                  item.color = 'black';
+                 console.log(item);
                  
             }
             else if(gdp>=170){
@@ -119,11 +121,12 @@ class Board extends React.Component {
             level = item.gdp;
          });
          
-        return weather;
+         this.setState({currentWeatherReports: weather});
     }
     componentDidMount() {
         this.getData(this.props.user.id);
         this.getWeather();
+       
     }
     getWeather(){
         let location = this.props.user.location;
@@ -137,7 +140,9 @@ class Board extends React.Component {
                            user: this.props.user,
                            location: location});
                            this.createWeather(res.data);
+                           this.calculateWeather();
         })
+        
     }
     getToday(){
         var objToday = new Date(),
@@ -163,6 +168,7 @@ class Board extends React.Component {
     status(weather){
         let copy = weather;
         var lastItem = copy[copy.length - 1];
+        console.log("weahter",weather);
         return (
                 <div style={{backgroundColor:lastItem.status,padding:'5px'}}>
                     <h2 style={{textAlign:'center',color:'black'}}>{lastItem.message}</h2>
@@ -185,7 +191,7 @@ class Board extends React.Component {
     ferterlize(weather){
         let id = weather[weather.length - 1].id;
         
-        axios.get('http://127.0.0.1:8081/weather/fertilize/'+id )
+        axios.get('http://3.137.214.252/weather/fertilize/'+id )
         .then(res => {
           if(res.data){
              console.log('good?');
@@ -197,11 +203,11 @@ class Board extends React.Component {
       })
         
     }
-    App(){
-        let currentWeatherReports =  this.calculateWeather();
+  
+    render() {
+       
         return(
-        <div style={{padding:'30px'}}>
-            
+            <div style={{padding:'30px'}}>
             <Card style={{width:'100%',margin:'auto',padding:'10px',maxHeight:'90vh'}}>
             <Dimmer active={this.state.Loading} inverted>
                 <Loader size='medium'>Loading</Loader>
@@ -213,7 +219,7 @@ class Board extends React.Component {
                     }
                 </Card.Header>
                 <Divider style={{marginBottom:'5px'}}></Divider>
-                {/* {(currentWeatherReports===[]) && this.status(currentWeatherReports)} */}
+                {this.state.currentWeatherReports.length > 0 && this.status(this.state.currentWeatherReports)}
                 <Divider style={{marginTop:'5px'}}></Divider>
                 <div style={{width:'100%'}}>
                     <div style={{maxHeight:'60vh',overflowY:'auto'}}>
@@ -225,27 +231,20 @@ class Board extends React.Component {
                                 <th>GDP</th>
                             </Table.Row>
                             <tbody>
-                                {this.tableBoard(currentWeatherReports)}
+                                {this.state.currentWeatherReports && this.tableBoard(this.state.currentWeatherReports)}
                             </tbody>
                         </table>
                     </div>
                 <Button.Group style={{width:'100%',padding:'10px',paddingBottom:"0px",marginTop:'2px'}}>
                     <Button style={{width:'50%'}} color='blue'>Fix</Button>
-                    <Button onClick={() => this.ferterlize(currentWeatherReports)} style={{color:'black',width:'50%'}} color='green'>Fertilze</Button>
+                    <Button onClick={() => this.ferterlize(this.state.currentWeatherReports)} style={{color:'black',width:'50%'}} color='green'>Fertilze</Button>
                 </Button.Group>
                 </div>
             </Card>
             <p style={{textAlign:'center',color:'white',padding:'5px'}}><a style={{color:'white',opacity:'50%'}} href = "mailto:maxjones2001@hotmail.com?subject=Help">Need help?</a></p>
 
 
-        </div>);
-    }
-
-    render() {
-        return(
-            <div>
-                {this.App()}
-            </div>
+        </div>
         );
     }     
 }
