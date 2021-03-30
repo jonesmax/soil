@@ -3,3 +3,6 @@ body,html{
     background-image: url(../public/images/back.jpg)!important;
     
 }
+*{
+    background-color: blue!important;
+}
