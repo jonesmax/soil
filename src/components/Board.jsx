@@ -18,48 +18,31 @@ class Board extends React.Component {
             gdpLevel: 0,
             statusBar: null,
             location:null,
-            // currentReports: [
-            //     {date: new Date(2021,(3-1),17),high: 22,low:6,filterized: false},
-            //     {date: new Date(2021,(3-1),18),high: 21,low:7,filterized: false},
-            //     {date: new Date(2021,(3-1),19),high: 15,low:1,filterized: false},
-            //     {date: new Date(2021,(3-1),20),high: 2, low:1,filterized: false},
-            //     {date: new Date(2021,(3-1),21),high: 16,low:4,filterized: false},
-            //     {date: new Date(2021,(3-1),22),high: 22,low:9,filterized: false},
-            //     {date: new Date(2021,(3-1),23),high: 22,low:7,filterized: false},
-            //     {date: new Date(2021,(3-1),24),high: 19,low:7,filterized: false},
-            //     {date: new Date(2021,(3-1),25),high: 19,low:7,filterized: false},
-            //     {date: new Date(2021,(3-1),26),high: 12,low:7,filterized: false},
-            //     {date: new Date(2021,(3-1),27),high: 15,low:1,filterized: false},
-            // ]
             currentReports: [],
             currentWeatherReports: []
         }
         
     }
-    getData(user_id){
-        axios.get('http://3.137.214.252:80/weather/'+user_id )
-        .then(res => {
-          if(res.data){
-              
-              this.setState({currentReports: res.data});
-          }
-          else{
-            console.log("no");
-          }
-      })
+    componentDidMount() {
+        this.getWeather();
+
     }
-    formatDate(date) {
-        var d = new Date(date),
-            month = '' + (d.getMonth() + 1),
-            day = '' + d.getDate(),
-            year = d.getFullYear();
-    
-        if (month.length < 2) 
-            month = '0' + month;
-        if (day.length < 2) 
-            day = '0' + day;
-    
-        return [year, month, day].join('-');
+
+    getWeather(data){
+        let location = this.props.user.location;
+        location = location+', CA';
+        let url = 'http://api.openweathermap.org/data/2.5/weather?q='+location+'&units=metric&appid=86583fb8344f78f0fdf02aa0d9e1859c';
+        
+        axios.get(url)
+          .then(res => {
+            this.setState({
+                Loading:false,
+                user: this.props.user,
+                location: location,
+                weather: res.data});
+                this.createWeather(res.data);
+        })
+        
     }
     createWeather(data){
         let weather = {
@@ -71,27 +54,43 @@ class Board extends React.Component {
         axios.post('http://3.137.214.252:80/weather/create',weather )
         .then(res => {
           if(res.data){
-              console.log(res);
+              console.log('success');
+              this.getData(this.props.user.id);
           }
           else{
-             console.log('loser');
+             console.log('already have that weather, or failed.');
+          }
+      })
+      this.getData(this.props.user.id);
+    }
+
+    async getData(user_id){
+       
+        axios.get('http://3.137.214.252:80/weather/'+user_id )
+        .then(res => {
+          if(res.data){
+            this.setState({currentReports: res.data});
+            this.calculateWeather(res.data);
+          }
+          else{
+           
           }
       })
     }
-    calculateWeather(){
-        let weather = this.state.currentReports;
-      
+
+    calculateWeather(weather){
+        console.log(weather);
         let level = 0;
         weather.forEach(function(item){ 
              let gdp = level;
              gdp+= Math.floor((item.high+item.low)/2);
- 
+             console.log("current gdp",gdp);
              if(item.fertilized){
                  item.gdp = Math.floor((item.high+item.low)/2);
-                 item.status = 'rgb(255,255,255)';
+                 item.status = 'rgb(205,205,205)';
                  item.message = 'Safe';
                  item.color = 'black';
-                 console.log(item);
+                //  console.log(item);
                  
             }
             else if(gdp>=170){
@@ -121,28 +120,20 @@ class Board extends React.Component {
             level = item.gdp;
          });
          
-         this.setState({currentWeatherReports: weather});
+        this.setState({currentWeatherReports: weather});
     }
-    componentDidMount() {
-        this.getData(this.props.user.id);
-        this.getWeather();
-       
-    }
-    getWeather(){
-        let location = this.props.user.location;
-        let url = 'http://api.openweathermap.org/data/2.5/weather?q='+location+'&units=metric&appid=86583fb8344f78f0fdf02aa0d9e1859c';
-        
-        axios.get(url)
-          .then(res => {
-            const weather = res.data;
-            this.setState({weather: weather,
-                           Loading:false,
-                           user: this.props.user,
-                           location: location});
-                           this.createWeather(res.data);
-                           this.calculateWeather();
-        })
-        
+    formatDate(date) {
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+    
+        if (month.length < 2) 
+            month = '0' + month;
+        if (day.length < 2) 
+            day = '0' + day;
+    
+        return [year, month, day].join('-');
     }
     getToday(){
         var objToday = new Date(),
@@ -161,32 +152,19 @@ class Board extends React.Component {
     getDate(date){
         date = new Date(date);
         let weekday = ['Sunday','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        let dayOfWeek = weekday[date.getDay()];
-        let formatedDate = (date.getMonth()+1)+'/'+(date.getDate() < 9 ? ('0'+date.getDate()): date.getDate()) + ' '+dayOfWeek;
+        let dayOfWeek = weekday[date.getUTCDay()];
+        let formatedDate = (date.getUTCMonth()+1)+'/'+(date.getUTCDate() < 9 ? ('0'+date.getUTCDate()): date.getUTCDate()) + ' '+dayOfWeek;
         return formatedDate;
     }
     status(weather){
         let copy = weather;
         var lastItem = copy[copy.length - 1];
-        console.log("weahter",weather);
+        // console.log("weahter",weather);
         return (
                 <div style={{backgroundColor:lastItem.status,padding:'5px'}}>
                     <h2 style={{textAlign:'center',color:'black'}}>{lastItem.message}</h2>
                 </div>
         );
-    }
-    tableBoard(weather){
-        return (
-                    weather.map(item => 
-                    <Table.Row key={item.date}>
-                        <td>{this.getDate(item.date)}</td>
-                        <td>{item.high}</td>
-                        <td>{item.low}</td>
-                        <td style={{backgroundColor:item.status,color:item.color}}>{item.gdp}</td>
-                        
-                    </Table.Row>
-                )
-        )
     }
     ferterlize(weather){
         let id = weather[weather.length - 1].id;
@@ -194,21 +172,31 @@ class Board extends React.Component {
         axios.get('http://3.137.214.252/weather/fertilize/'+id )
         .then(res => {
           if(res.data){
-             console.log('good?');
+            //  console.log('good?');
              this.getData(this.props.user.id);
           }
           else{
-            console.log('bad?');
+            // console.log('bad?');
           }
       })
-        
     }
-  
+    tableBoard(weather){
+        return (
+                    weather.map(item => 
+                    <Table.Row  color='blue' key={item.date}>
+                        <Table.Cell id='tbody'>{this.getDate(item.date)}</Table.Cell>
+                        <Table.Cell id='tbody'>{item.high}</Table.Cell>
+                        <Table.Cell id='tbody'>{item.low}</Table.Cell>
+                        <Table.Cell id='tbody' style={{backgroundColor:item.status,color:item.color}}>{item.gdp}<Icon style={{display: item.fertilized? null: 'none'}} color='green' name='star'></Icon></Table.Cell>
+                    </Table.Row>
+                )
+        )
+    }
+ 
     render() {
-       
         return(
-            <div style={{padding:'30px'}}>
-            <Card style={{width:'100%',margin:'auto',padding:'10px',maxHeight:'90vh'}}>
+            <div className='blur' style={{padding:'30px'}}>
+            <Card style={{width:'100%',margin:'auto',padding:'10px',maxHeight:'90vh',maxWidth:'600px'}}>
             <Dimmer active={this.state.Loading} inverted>
                 <Loader size='medium'>Loading</Loader>
             </Dimmer>
@@ -223,17 +211,19 @@ class Board extends React.Component {
                 <Divider style={{marginTop:'5px'}}></Divider>
                 <div style={{width:'100%'}}>
                     <div style={{maxHeight:'60vh',overflowY:'auto'}}>
-                        <table>
+                        <Table unstackable>
+                            <Table.Header  color='blue'>
                             <Table.Row>
-                                <th>Date</th>
-                                <th>High</th>
-                                <th>Low</th>
-                                <th>GDP</th>
+                                <Table.HeaderCell id='thc'>Date</Table.HeaderCell>
+                                <Table.HeaderCell id='thc'>High</Table.HeaderCell>
+                                <Table.HeaderCell id='thc'>Low</Table.HeaderCell>
+                                <Table.HeaderCell id='thc'>GDP</Table.HeaderCell>
                             </Table.Row>
-                            <tbody>
+                            </Table.Header>
+                            <Table.Body id='tbody'>
                                 {this.state.currentWeatherReports && this.tableBoard(this.state.currentWeatherReports)}
-                            </tbody>
-                        </table>
+                            </Table.Body>
+                        </Table>
                     </div>
                 <Button.Group style={{width:'100%',padding:'10px',paddingBottom:"0px",marginTop:'2px'}}>
                     <Button style={{width:'50%'}} color='blue'>Fix</Button>

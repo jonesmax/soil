@@ -19,4 +19,42 @@ table {
     background-color: rgb(243, 243, 243);
     padding: 5px;
   }
-  
+
+#thc{
+    background-color: blue;
+    color:white;
+    border: none;
+}
+#tbody{
+    background-color: rgb(235, 235, 235);
+    border:none;
+}
+h1{
+    font-family: 'Bebas Neue', cursive;
+}
+
+
+@media screen and (-webkit-min-device-pixel-ratio:0) { 
+    select,
+    textarea,
+    input {
+      font-size: 16px;
+    }
+    *{
+        font-size: 16px;
+    }
+    
+  }
+
+
+#main{
+    min-height:100vh; 
+    background-image: url("../images/background_image.jpg");
+    background-repeat: no-repeat;
+
+}
+.blur{
+
+    backdrop-filter: blur(5px);
+    min-height: 100vh;
+}

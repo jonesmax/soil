@@ -4,7 +4,7 @@ import '../css/Main.css'
 import Board from './Board';
 
 import 'semantic-ui-less/semantic.less';
-import { Icon,Button,Card,Divider,Segment, Input, Label } from 'semantic-ui-react';
+import { Icon,Button,Card,Divider,Segment, Input, Label, Image } from 'semantic-ui-react';
 
 
 
@@ -16,7 +16,7 @@ class Login extends React.Component {
             users: null,
             username: null,
             password: null,
-            status: 'No User',
+            status: ' ',
         }
         this.handleUsername = this.handleUsername.bind(this);
         this.handlePassword = this.handlePassword.bind(this);
@@ -47,14 +47,18 @@ class Login extends React.Component {
     }
     loginForm(){
         return(
-            <div style={{padding:'30px'}}>
-                <Card style={{margin:'auto',padding:'10px'}}>
-                    <Card.Header><h1 style={{textAlign:'center'}}>Soil</h1></Card.Header>
+            <div className='blur' style={{padding:'30px'}}>
+                <Card style={{margin:'auto',padding:'10px',marginTop:'30px',backgroundColor:'rgb(245, 245, 245,0.85)'}}>
+                    <Card.Header>
+                        <h1 style={{textAlign:'center',fontFamily:'Cinzel',marginTop:'10px'}}>Soil</h1>
+                        <p style={{textAlign:'center',fontSize:'12px'}}>Sign in to continue</p>
+                    </Card.Header>
                     <Divider></Divider>
-                    <Input onChange={this.handleUsername} style={{padding:'10px',paddingBottom:'5px',paddingTop:'5px'}} placeholder='Username...'></Input>
-                    <Input  onKeyPress={event => {if (event.key === 'Enter') {this.loginUser()}}} type="password" onChange={this.handlePassword} style={{padding:'10px'}} placeholder='Password...'></Input>
+                    <Input onChange={this.handleUsername} style={{padding:'10px',paddingBottom:'5px',paddingTop:'5px',fontSize:'16px'}} placeholder='Username'></Input>
+                    <Input  onKeyPress={event => {if (event.key === 'Enter') {this.loginUser()}}} type="password" onChange={this.handlePassword} style={{padding:'10px',fontSize:'16px'}} placeholder='Password'></Input>
                     <div style={{marginTop:'10px',textAlign:'center'}}>
                         <Button onClick={() => this.loginUser()} style={{padding:'10px',width:'50%',margin:'auto'}} color='green'>Login</Button>
+                        <p style={{marginTop:'5px',color:'red'}}>{this.state.status}</p>
                     </div>
                     <p style={{textAlign:'center',paddingTop:'10px',opacity:'50%',paddingBottom:'5px'}}>to recieve an account, click <a href = "mailto:maxjones2001@hotmail.com?subject=Request soil account">here</a>.</p>
                 </Card>
