@@ -39,8 +39,8 @@ class Login extends React.Component {
               this.setState({status: "Not Succesful",});
           }
           else{
-             
-              this.setState({status: "Success",
+            localStorage.setItem("user",JSON.stringify(res.data));
+            this.setState({status: "Success",
                             user:res.data});
           }
       })
@@ -62,11 +62,18 @@ class Login extends React.Component {
                     </div>
                     <p style={{textAlign:'center',paddingTop:'10px',opacity:'50%',paddingBottom:'5px'}}>to recieve an account, click <a href = "mailto:maxjones2001@hotmail.com?subject=Request soil account">here</a>.</p>
                 </Card>
+               
                 <p style={{color:'white',textAlign:'center',opacity:'60%',padding:'3px'}}><a rel="noreferrer" style={{color:'white',textAlign:'center',textDecoration:'none'}} href = "https://maxwelljonesdesign.com/" target="_blank" > maxwelljonesdesign.com</a></p>
             </div> 
         );
     }
 
+    componentDidMount(){
+        if(localStorage.getItem("user")){
+            let user = JSON.parse(localStorage.getItem("user"));
+            this.setState({user: user});
+        }
+    }
     render() {
         return(
             <div>

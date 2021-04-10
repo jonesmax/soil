@@ -3,7 +3,7 @@ import axios from 'axios';
 import '../css/Main.css';
 
 import 'semantic-ui-less/semantic.less';
-import { Icon,Button,Card,Divider,Segment, Input, Label,Loading,Loader, Dimmer,List,Table, Container } from 'semantic-ui-react';
+import { Icon,Button,Card,Divider,Segment, Input, Label,Loading,Loader, Dimmer,List,Table, Container, Modal } from 'semantic-ui-react';
 
 
 
@@ -19,7 +19,10 @@ class Board extends React.Component {
             statusBar: null,
             location:null,
             currentReports: [],
-            currentWeatherReports: []
+            currentWeatherReports: [],
+            modal: false,
+            modal2: false,
+            selectedDay: null
         }
         
     }
@@ -40,28 +43,9 @@ class Board extends React.Component {
                 user: this.props.user,
                 location: location,
                 weather: res.data});
-                this.createWeather(res.data);
+                this.getData(this.props.user.id);
         })
         
-    }
-    createWeather(data){
-        let weather = {
-            user_id: this.props.user.id,
-            date: this.formatDate(new Date()),
-            high: data.main.temp_max,
-            low: data.main.temp_min,
-        }
-        axios.post('http://3.137.214.252:80/weather/create',weather )
-        .then(res => {
-          if(res.data){
-              console.log('success');
-              this.getData(this.props.user.id);
-          }
-          else{
-             console.log('already have that weather, or failed.');
-          }
-      })
-      this.getData(this.props.user.id);
     }
 
     async getData(user_id){
@@ -179,6 +163,7 @@ class Board extends React.Component {
             // console.log('bad?');
           }
       })
+      this.closeModal();
     }
     tableBoard(weather){
         return (
@@ -187,13 +172,47 @@ class Board extends React.Component {
                         <Table.Cell id='tbody'>{this.getDate(item.date)}</Table.Cell>
                         <Table.Cell id='tbody'>{item.high}</Table.Cell>
                         <Table.Cell id='tbody'>{item.low}</Table.Cell>
-                        <Table.Cell id='tbody' style={{backgroundColor:item.status,color:item.color}}>{item.gdp}<Icon style={{display: item.fertilized? null: 'none'}} color='green' name='star'></Icon></Table.Cell>
+                        <Table.Cell id='tbody' style={{backgroundColor:item.status,color:item.color}}>{item.gdp}<Icon style={{display: item.fertilized? null: 'none'}} color='black' name='star'></Icon></Table.Cell>
                     </Table.Row>
                 )
         )
     }
- 
+    openModal(){
+        this.setState({modal: true});
+    }
+    closeModal(){
+        this.setState({modal: false});
+    }
+
+    openModal2(){
+        this.setState({modal2: true});
+    }
+    closeModal2(){
+        this.setState({modal2: false});
+    }
+
+    logout(){
+        console.log("logging out");
+        localStorage.setItem("user",null);
+        this.setState({user: null});
+        window.location.reload(true);
+    }
+    updateWeatherItem(weatherItem){
+        weatherItem = {id:53,high:20.0,low:12.2};
+
+        axios.post('http://3.137.214.252/weather/update/',weatherItem)
+        .then(res => {
+          if(res.data){
+             this.getData(this.props.user.id);
+          }
+          else{
+         
+          }
+      })
+    }
+
     render() {
+        
         return(
             <div className='blur' style={{padding:'30px'}}>
             <Card style={{width:'100%',margin:'auto',padding:'10px',maxHeight:'90vh',maxWidth:'600px'}}>
@@ -226,17 +245,63 @@ class Board extends React.Component {
                         </Table>
                     </div>
                 <Button.Group style={{width:'100%',padding:'10px',paddingBottom:"0px",marginTop:'2px'}}>
-                    <Button style={{width:'50%'}} color='blue'>Fix</Button>
-                    <Button onClick={() => this.ferterlize(this.state.currentWeatherReports)} style={{color:'black',width:'50%'}} color='green'>Fertilze</Button>
+                    <Button onClick={()=>this.openModal2()}style={{width:'50%'}} color='blue'>Fix</Button>
+                    <Button onClick={()=>this.openModal()} style={{color:'black',width:'50%'}} color='green'>Fertilze</Button>
                 </Button.Group>
                 </div>
             </Card>
-            <p style={{textAlign:'center',color:'white',padding:'5px'}}><a style={{color:'white',opacity:'50%'}} href = "mailto:maxjones2001@hotmail.com?subject=Help">Need help?</a></p>
 
+            <Modal size='tiny' id='modal' style={{width:'300px',height:'120px'}} open={this.state.modal}>
+                <div style={{padding:'20px'}}>
+                    Are you sure?
+                    <Button.Group style={{width:'100%',paddingTop:'20px'}}>
+                        <Button onClick={() => this.ferterlize(this.state.currentWeatherReports)} color='green'>Yes</Button>
+                        <Button onClick={()=>this.closeModal()}color='red'>No</Button>
+                    </Button.Group>
+                </div>
+            </Modal>
 
+            <Modal size='tiny' id='modal' style={{width:'375px',height:'720px'}} open={this.state.modal2}>
+                <div style={{padding:'20px'}}>
+                    Fix an issue
+                    <div style={{maxHeight:'60vh',overflowY:'auto',paddingTop:'20px'}}>
+                        <Table unstackable>
+                            <Table.Header  color='blue'>
+                            <Table.Row>
+                                <Table.HeaderCell id='thc'>id</Table.HeaderCell>
+                                <Table.HeaderCell id='thc'>Date</Table.HeaderCell>
+                                <Table.HeaderCell id='thc'>High</Table.HeaderCell>
+                                <Table.HeaderCell id='thc'>Low</Table.HeaderCell>
+                            </Table.Row>
+                            </Table.Header>
+                            <Table.Body id='tbody'>
+                                {this.state.currentWeatherReports.map(item => 
+                                <Table.Row  color='blue' key={item.date}>
+                                    <Table.Cell id='tbody'>{item.id}</Table.Cell>
+                                    <Table.Cell id='tbody'>{this.getDate(item.date)}</Table.Cell>
+                                    <Table.Cell id='tbody'>{item.high}</Table.Cell>
+                                    <Table.Cell id='tbody'>{item.low}</Table.Cell>
+                                </Table.Row>)}
+                            </Table.Body>
+                        </Table>
+                    </div>
+                    <Input style={{margin:'auto',paddingTop:'20px'}} label='ID'></Input>
+                    <Input style={{margin:'auto',paddingTop:'20px'}} label='High'></Input>
+                    <Input style={{margin:'auto',paddingTop:'20px',paddingBottom:'20px'}} label='Low'></Input>
+
+                    <Button onClick={()=>this.updateWeatherItem()}>Update</Button>
+                    <Button>Cancel</Button>
+                </div>
+            </Modal>
+           
+            <div style={{margin:'5px',textAlign:'center'}}>
+                <Button onClick={()=>this.logout()} style={{margin:'auto',textAlign:'center'}}>Logout</Button>
+                <p style={{textAlign:'center',color:'white',padding:'5px'}}><a style={{color:'white',opacity:'50%'}} href = "mailto:maxjones2001@hotmail.com?subject=Help">Need help?</a></p>
+            </div>
+            
         </div>
         );
-    }     
+    }      
 }
 
 export default Board;

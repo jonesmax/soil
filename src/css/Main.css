@@ -32,7 +32,14 @@ table {
 h1{
     font-family: 'Bebas Neue', cursive;
 }
-
+/* .modal {
+    background: green;
+    position: absolute;
+    float: left;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  } */
 
 @media screen and (-webkit-min-device-pixel-ratio:0) { 
     select,
@@ -54,7 +61,6 @@ h1{
 
 }
 .blur{
-
     backdrop-filter: blur(5px);
     min-height: 100vh;
 }
