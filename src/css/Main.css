@@ -57,7 +57,7 @@ h1{
 #main{
     min-height:100vh; 
     background-image: url("../images/background_image.jpg");
-    background-repeat: no-repeat;
+    background-size: cover;
 
 }
 .blur{

@@ -32,7 +32,7 @@ class Login extends React.Component {
             username: this.state.username,
             password: this.state.password,
         }
-        axios.post('http://3.137.214.252/users/login',user )
+        axios.post('http://3.15.10.36/users/login',user )
         .then(res => {
           if(!res.data){
               console.log("no user found");

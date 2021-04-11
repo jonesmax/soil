@@ -3,7 +3,7 @@ import axios from 'axios';
 import '../css/Main.css';
 
 import 'semantic-ui-less/semantic.less';
-import { Icon,Button,Card,Divider,Segment, Input, Label,Loading,Loader, Dimmer,List,Table, Container, Modal } from 'semantic-ui-react';
+import { Icon,Button,Card,Divider,Segment,Checkbox, Input, Label,Loading,Loader, Dimmer,List,Table, Container, Modal } from 'semantic-ui-react';
 
 
 
@@ -50,7 +50,7 @@ class Board extends React.Component {
 
     async getData(user_id){
        
-        axios.get('http://3.137.214.252/weather/'+user_id )
+        axios.get('http://3.15.10.36/weather/'+user_id )
         .then(res => {
           if(res.data){
             this.setState({currentReports: res.data});
@@ -153,7 +153,7 @@ class Board extends React.Component {
     ferterlize(weather){
         let id = weather[weather.length - 1].id;
         
-        axios.get('http://3.137.214.252/weather/fertilize/'+id )
+        axios.get('http://3.15.10.36/weather/fertilize/'+id )
         .then(res => {
           if(res.data){
             //  console.log('good?');
@@ -172,7 +172,7 @@ class Board extends React.Component {
                         <Table.Cell id='tbody'>{this.getDate(item.date)}</Table.Cell>
                         <Table.Cell id='tbody'>{item.high}</Table.Cell>
                         <Table.Cell id='tbody'>{item.low}</Table.Cell>
-                        <Table.Cell id='tbody' style={{backgroundColor:item.status,color:item.color}}>{item.gdp}<Icon style={{display: item.fertilized? null: 'none'}} color='black' name='star'></Icon></Table.Cell>
+                        <Table.Cell id='tbody' style={{backgroundColor:item.status,color:item.color}}>{item.gdp}<Icon style={{display: item.fertilized? null: 'none'}} color='black' name='leaf'></Icon></Table.Cell>
                     </Table.Row>
                 )
         )
@@ -202,9 +202,11 @@ class Board extends React.Component {
         let id = document.getElementById("idForm").value;
         let high = document.getElementById("highForm").value;
         let low = document.getElementById("lowForm").value;
-        weatherItem = {id:id,high:high,low:low};
+        let fertilized = document.getElementById("fertForm").checked;
+
+        weatherItem = {id:id,high:high,low:low,fertilized:fertilized};
         
-        axios.post('http://3.137.214.252/weather/update',weatherItem)
+        axios.post('http://3.15.10.36/weather/update',weatherItem)
         .then(res => {
           if(res.data){
              this.getData(this.props.user.id);
@@ -289,10 +291,11 @@ class Board extends React.Component {
                             </Table.Body>
                         </Table>
                     </div>
-                    <Input id='idForm' style={{margin:'auto',paddingTop:'20px'}} label='ID'></Input>
-                    <Input id='highForm'style={{margin:'auto',paddingTop:'20px'}} label='High'></Input>
-                    <Input id='lowForm'style={{margin:'auto',paddingTop:'20px',paddingBottom:'20px'}} label='Low'></Input>
-
+                    <Input id='idForm' style={{margin:'auto',paddingTop:'10px'}} label='ID'></Input>
+                    <Input id='highForm'style={{margin:'auto',paddingTop:'10px'}} label='High'></Input>
+                    <Input id='lowForm'style={{margin:'auto',paddingTop:'10px'}} label='Low'></Input>
+                    <Checkbox id='fertForm'style={{width:'100%',margin:'auto',paddingTop:'10px',paddingBottom:'20px'}} label='Fertilzed'></Checkbox>
+               
                     <Button onClick={()=>this.updateWeatherItem()}>Update</Button>
                     <Button onClick={()=>this.closeModal2()}>Cancel</Button>
                 </div>
