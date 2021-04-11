@@ -50,7 +50,7 @@ class Board extends React.Component {
 
     async getData(user_id){
        
-        axios.get('http://127.0.0.1:8081/weather/'+user_id )
+        axios.get('http://3.137.214.252/weather/'+user_id )
         .then(res => {
           if(res.data){
             this.setState({currentReports: res.data});
@@ -153,7 +153,7 @@ class Board extends React.Component {
     ferterlize(weather){
         let id = weather[weather.length - 1].id;
         
-        axios.get('http://127.0.0.1:8081/weather/fertilize/'+id )
+        axios.get('http://3.137.214.252/weather/fertilize/'+id )
         .then(res => {
           if(res.data){
             //  console.log('good?');
@@ -204,7 +204,7 @@ class Board extends React.Component {
         let low = document.getElementById("lowForm").value;
         weatherItem = {id:id,high:high,low:low};
         
-        axios.post('http://127.0.0.1:8081/weather/update/',weatherItem)
+        axios.post('http://3.137.214.252/weather/update/',weatherItem)
         .then(res => {
           if(res.data){
              this.getData(this.props.user.id);
