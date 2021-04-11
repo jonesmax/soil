@@ -50,7 +50,7 @@ class Board extends React.Component {
 
     async getData(user_id){
        
-        axios.get('http://3.137.214.252:80/weather/'+user_id )
+        axios.get('http://127.0.0.1:8081/weather/'+user_id )
         .then(res => {
           if(res.data){
             this.setState({currentReports: res.data});
@@ -153,7 +153,7 @@ class Board extends React.Component {
     ferterlize(weather){
         let id = weather[weather.length - 1].id;
         
-        axios.get('http://3.137.214.252/weather/fertilize/'+id )
+        axios.get('http://127.0.0.1:8081/weather/fertilize/'+id )
         .then(res => {
           if(res.data){
             //  console.log('good?');
@@ -198,9 +198,13 @@ class Board extends React.Component {
         window.location.reload(true);
     }
     updateWeatherItem(weatherItem){
-        weatherItem = {id:53,high:20.0,low:12.2};
 
-        axios.post('http://3.137.214.252/weather/update/',weatherItem)
+        let id = document.getElementById("idForm").value;
+        let high = document.getElementById("highForm").value;
+        let low = document.getElementById("lowForm").value;
+        weatherItem = {id:id,high:high,low:low};
+        
+        axios.post('http://127.0.0.1:8081/weather/update/',weatherItem)
         .then(res => {
           if(res.data){
              this.getData(this.props.user.id);
@@ -285,12 +289,12 @@ class Board extends React.Component {
                             </Table.Body>
                         </Table>
                     </div>
-                    <Input style={{margin:'auto',paddingTop:'20px'}} label='ID'></Input>
-                    <Input style={{margin:'auto',paddingTop:'20px'}} label='High'></Input>
-                    <Input style={{margin:'auto',paddingTop:'20px',paddingBottom:'20px'}} label='Low'></Input>
+                    <Input id='idForm' style={{margin:'auto',paddingTop:'20px'}} label='ID'></Input>
+                    <Input id='highForm'style={{margin:'auto',paddingTop:'20px'}} label='High'></Input>
+                    <Input id='lowForm'style={{margin:'auto',paddingTop:'20px',paddingBottom:'20px'}} label='Low'></Input>
 
                     <Button onClick={()=>this.updateWeatherItem()}>Update</Button>
-                    <Button>Cancel</Button>
+                    <Button onClick={()=>this.closeModal2()}>Cancel</Button>
                 </div>
             </Modal>
            
