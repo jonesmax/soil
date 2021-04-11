@@ -1,5 +1,7 @@
 body,html{
-    background-color: blue!important;
-    background-image: url(../public/images/back.jpg)!important;
+    /* background-image: url(../public/images/back.jpg)!important; */
+    background-repeat: repeat;
+    background-size: cover;
+    width:100%;
     
 }
