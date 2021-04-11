@@ -204,7 +204,7 @@ class Board extends React.Component {
         let low = document.getElementById("lowForm").value;
         weatherItem = {id:id,high:high,low:low};
         
-        axios.post('http://3.137.214.252/weather/update/',weatherItem)
+        axios.post('http://3.137.214.252/weather/update',weatherItem)
         .then(res => {
           if(res.data){
              this.getData(this.props.user.id);
