@@ -34,7 +34,7 @@ class Board extends React.Component {
     getWeather(data){
         let location = this.props.user.location;
         location = location+', CA';
-        let url = 'http://api.openweathermap.org/data/2.5/weather?q='+location+'&units=metric&appid=86583fb8344f78f0fdf02aa0d9e1859c';
+        let url = 'https://cors-anywhere.herokuapp.com/http://api.openweathermap.org/data/2.5/weather?q='+location+'&units=metric&appid=86583fb8344f78f0fdf02aa0d9e1859c';
         
         axios.get(url)
           .then(res => {
