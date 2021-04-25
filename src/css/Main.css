@@ -51,7 +51,7 @@ h1{
         font-size: 16px;
     }
     
-  }
+}
 
 
 #main{
@@ -63,4 +63,9 @@ h1{
 .blur{
     backdrop-filter: blur(5px);
     min-height: 100vh;
+}
+#modal{
+ 
+    margin:auto;
+   
 }

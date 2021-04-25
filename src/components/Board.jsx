@@ -21,7 +21,7 @@ class Board extends React.Component {
             currentReports: [],
             currentWeatherReports: [],
             modal: false,
-            modal2: false,
+            modal2: true,
             selectedDay: null
         }
         
@@ -50,7 +50,7 @@ class Board extends React.Component {
 
     async getData(user_id){
        
-        axios.get('http://3.15.10.36/weather/'+user_id )
+        axios.get('https://cors-anywhere.herokuapp.com/http://3.15.10.36/weather/'+user_id )
         .then(res => {
           if(res.data){
             this.setState({currentReports: res.data});
@@ -153,7 +153,7 @@ class Board extends React.Component {
     ferterlize(weather){
         let id = weather[weather.length - 1].id;
         
-        axios.get('http://3.15.10.36/weather/fertilize/'+id )
+        axios.get('https://cors-anywhere.herokuapp.com/http://3.15.10.36/weather/fertilize/'+id )
         .then(res => {
           if(res.data){
             //  console.log('good?');
@@ -198,7 +198,6 @@ class Board extends React.Component {
         window.location.reload(true);
     }
     updateWeatherItem(weatherItem){
-
         let id = document.getElementById("idForm").value;
         let high = document.getElementById("highForm").value;
         let low = document.getElementById("lowForm").value;
@@ -206,10 +205,11 @@ class Board extends React.Component {
 
         weatherItem = {id:id,high:high,low:low,fertilized:fertilized};
         
-        axios.post('http://3.15.10.36/weather/update',weatherItem)
+        axios.post('https://cors-anywhere.herokuapp.com/http://3.15.10.36/weather/update',weatherItem)
         .then(res => {
           if(res.data){
              this.getData(this.props.user.id);
+             this.closeModal2();
           }
           else{
          
@@ -242,7 +242,7 @@ class Board extends React.Component {
                                 <Table.HeaderCell id='thc'>Date</Table.HeaderCell>
                                 <Table.HeaderCell id='thc'>High</Table.HeaderCell>
                                 <Table.HeaderCell id='thc'>Low</Table.HeaderCell>
-                                <Table.HeaderCell id='thc'>GDP</Table.HeaderCell>
+                                <Table.HeaderCell id='thc'>GDD</Table.HeaderCell>
                             </Table.Row>
                             </Table.Header>
                             <Table.Body id='tbody'>
@@ -267,45 +267,48 @@ class Board extends React.Component {
                 </div>
             </Modal>
 
-            <Modal size='tiny' id='modal' style={{width:'375px',height:'720px'}} open={this.state.modal2}>
-                <div style={{padding:'20px'}}>
-                    Fix an issue
-                    <div style={{maxHeight:'60vh',overflowY:'auto',paddingTop:'20px'}}>
-                        <Table unstackable>
-                            <Table.Header  color='blue'>
-                            <Table.Row>
-                                <Table.HeaderCell id='thc'>id</Table.HeaderCell>
-                                <Table.HeaderCell id='thc'>Date</Table.HeaderCell>
-                                <Table.HeaderCell id='thc'>High</Table.HeaderCell>
-                                <Table.HeaderCell id='thc'>Low</Table.HeaderCell>
-                            </Table.Row>
-                            </Table.Header>
-                            <Table.Body id='tbody'>
-                                {this.state.currentWeatherReports.map(item => 
-                                <Table.Row  color='blue' key={item.date}>
-                                    <Table.Cell id='tbody'>{item.id}</Table.Cell>
-                                    <Table.Cell id='tbody'>{this.getDate(item.date)}</Table.Cell>
-                                    <Table.Cell id='tbody'>{item.high}</Table.Cell>
-                                    <Table.Cell id='tbody'>{item.low}</Table.Cell>
-                                </Table.Row>)}
-                            </Table.Body>
-                        </Table>
-                    </div>
-                    <Input id='idForm' style={{margin:'auto',paddingTop:'10px'}} label='ID'></Input>
-                    <Input id='highForm'style={{margin:'auto',paddingTop:'10px'}} label='High'></Input>
-                    <Input id='lowForm'style={{margin:'auto',paddingTop:'10px'}} label='Low'></Input>
-                    <Checkbox id='fertForm'style={{width:'100%',margin:'auto',paddingTop:'10px',paddingBottom:'20px'}} label='Fertilzed'></Checkbox>
-               
-                    <Button onClick={()=>this.updateWeatherItem()}>Update</Button>
-                    <Button onClick={()=>this.closeModal2()}>Cancel</Button>
-                </div>
-            </Modal>
+            
            
             <div style={{margin:'5px',textAlign:'center'}}>
                 <Button onClick={()=>this.logout()} style={{margin:'auto',textAlign:'center'}}>Logout</Button>
                 <p style={{textAlign:'center',color:'white',padding:'5px'}}><a style={{color:'white',opacity:'50%'}} href = "mailto:maxjones2001@hotmail.com?subject=Help">Need help?</a></p>
             </div>
             
+           
+                <Modal id='modal'style={{margin:'auto',width:'100%',height:'50vh'}} open={this.state.modal2}>
+                    <div style={{padding:'20px'}}>
+                        Fix an issue
+                        <div style={{maxHeight:'60vh',overflowY:'auto',paddingTop:'20px'}}>
+                            <Table unstackable>
+                                <Table.Header  color='blue'>
+                                <Table.Row>
+                                    <Table.HeaderCell id='thc'>id</Table.HeaderCell>
+                                    <Table.HeaderCell id='thc'>Date</Table.HeaderCell>
+                                    <Table.HeaderCell id='thc'>High</Table.HeaderCell>
+                                    <Table.HeaderCell id='thc'>Low</Table.HeaderCell>
+                                </Table.Row>
+                                </Table.Header>
+                                <Table.Body id='tbody'>
+                                    {this.state.currentWeatherReports.map(item => 
+                                    <Table.Row  color='blue' key={item.date}>
+                                        <Table.Cell id='tbody'>{item.id}</Table.Cell>
+                                        <Table.Cell id='tbody'>{this.getDate(item.date)}</Table.Cell>
+                                        <Table.Cell id='tbody'>{item.high}</Table.Cell>
+                                        <Table.Cell id='tbody'>{item.low}</Table.Cell>
+                                    </Table.Row>)}
+                                </Table.Body>
+                            </Table>
+                        </div>
+                        <Input id='idForm' style={{margin:'auto',paddingTop:'10px'}} label='ID'></Input>
+                        <Input id='highForm'style={{margin:'auto',paddingTop:'10px'}} label='High'></Input>
+                        <Input id='lowForm'style={{margin:'auto',paddingTop:'10px'}} label='Low'></Input>
+                        <Checkbox id='fertForm'style={{width:'100%',margin:'auto',paddingTop:'10px',paddingBottom:'20px'}} label='Fertilzed'></Checkbox>
+                
+                        <Button onClick={()=>this.updateWeatherItem()}>Update</Button>
+                        <Button onClick={()=>this.closeModal2()}>Cancel</Button>
+                    </div>
+                </Modal>
+         
         </div>
         );
     }      

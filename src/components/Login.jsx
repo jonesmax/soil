@@ -23,7 +23,7 @@ class Login extends React.Component {
     }
     handleUsername(event) {
         this.setState({username: event.target.value});
-    }
+    }   
     handlePassword(event) {
         this.setState({password: event.target.value});
     }
@@ -32,7 +32,7 @@ class Login extends React.Component {
             username: this.state.username,
             password: this.state.password,
         }
-        axios.post('http://3.15.10.36/users/login',user )
+        axios.post('https://cors-anywhere.herokuapp.com/http://3.15.10.36/users/login',user )
         .then(res => {
           if(!res.data){
               console.log("no user found");
