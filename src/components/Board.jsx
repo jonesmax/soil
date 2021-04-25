@@ -21,7 +21,7 @@ class Board extends React.Component {
             currentReports: [],
             currentWeatherReports: [],
             modal: false,
-            modal2: true,
+            modal2: false,
             selectedDay: null
         }
         
@@ -34,7 +34,7 @@ class Board extends React.Component {
     getWeather(data){
         let location = this.props.user.location;
         location = location+', CA';
-        let url = 'https://cors-anywhere.herokuapp.com/http://api.openweathermap.org/data/2.5/weather?q='+location+'&units=metric&appid=86583fb8344f78f0fdf02aa0d9e1859c';
+        let url = 'https://cors.bridged.cc/http://api.openweathermap.org/data/2.5/weather?q='+location+'&units=metric&appid=86583fb8344f78f0fdf02aa0d9e1859c';
         
         axios.get(url)
           .then(res => {
@@ -50,7 +50,7 @@ class Board extends React.Component {
 
     async getData(user_id){
        
-        axios.get('https://cors-anywhere.herokuapp.com/http://3.15.10.36/weather/'+user_id )
+        axios.get('https://cors.bridged.cc/http://3.15.10.36/weather/'+user_id )
         .then(res => {
           if(res.data){
             this.setState({currentReports: res.data});
@@ -153,7 +153,7 @@ class Board extends React.Component {
     ferterlize(weather){
         let id = weather[weather.length - 1].id;
         
-        axios.get('https://cors-anywhere.herokuapp.com/http://3.15.10.36/weather/fertilize/'+id )
+        axios.get('https://cors.bridged.cc/http://3.15.10.36/weather/fertilize/'+id )
         .then(res => {
           if(res.data){
             //  console.log('good?');
@@ -205,7 +205,7 @@ class Board extends React.Component {
 
         weatherItem = {id:id,high:high,low:low,fertilized:fertilized};
         
-        axios.post('https://cors-anywhere.herokuapp.com/http://3.15.10.36/weather/update',weatherItem)
+        axios.post('https://cors.bridged.cc/http://3.15.10.36/weather/update',weatherItem)
         .then(res => {
           if(res.data){
              this.getData(this.props.user.id);
