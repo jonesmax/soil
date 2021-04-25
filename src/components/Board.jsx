@@ -27,26 +27,26 @@ class Board extends React.Component {
         
     }
     componentDidMount() {
-        this.getWeather();
+        this.getData(this.props.user.id);
 
     }
 
-    getWeather(data){
-        let location = this.props.user.location;
-        location = location+', CA';
-        let url = 'https://cors.bridged.cc/http://api.openweathermap.org/data/2.5/weather?q='+location+'&units=metric&appid=86583fb8344f78f0fdf02aa0d9e1859c';
+    // getWeather(data){
+    //     let location = this.props.user.location;
+    //     location = location+', CA';
+    //     let url = 'https://cors.bridged.cc/http://api.openweathermap.org/data/2.5/weather?q='+location+'&units=metric&appid=86583fb8344f78f0fdf02aa0d9e1859c';
         
-        axios.get(url)
-          .then(res => {
-            this.setState({
-                Loading:false,
-                user: this.props.user,
-                location: location,
-                weather: res.data});
-                this.getData(this.props.user.id);
-        })
+    //     axios.get(url)
+    //       .then(res => {
+    //         this.setState({
+    //             Loading:false,
+    //             user: this.props.user,
+    //             location: location,
+    //             weather: res.data});
+    //             this.getData(this.props.user.id);
+    //     })
         
-    }
+    // }
 
     async getData(user_id){
        
