@@ -32,7 +32,7 @@ class Login extends React.Component {
             username: this.state.username,
             password: this.state.password,
         }
-        axios.post('https://cors.bridged.cc/http://3.15.10.36/users/login',user )
+        axios.post('https://maxwelljonesdesign.com/users/login',user )
         .then(res => {
           if(!res.data){
               console.log("no user found");
@@ -63,7 +63,7 @@ class Login extends React.Component {
                     <p style={{textAlign:'center',paddingTop:'10px',opacity:'50%',paddingBottom:'5px'}}>to recieve an account, click <a href = "mailto:maxjones2001@hotmail.com?subject=Request soil account">here</a>.</p>
                 </Card>
                
-                <p style={{color:'white',textAlign:'center',opacity:'60%',padding:'3px'}}><a rel="noreferrer" style={{color:'white',textAlign:'center',textDecoration:'none'}} href = "https://maxwelljonesdesign.com/" target="_blank" > maxwelljonesdesign.com</a></p>
+                <p style={{color:'white',textAlign:'center',opacity:'60%',padding:'3px'}}><a rel="noreferrer" style={{color:'white',textAlign:'center',textDecoration:'none'}} href = "https://maxwelljones.ca/" target="_blank" > maxwelljones.ca</a></p>
             </div> 
         );
     }

@@ -50,7 +50,7 @@ class Board extends React.Component {
 
     async getData(user_id){
        
-        axios.get('https://cors.bridged.cc/http://3.15.10.36/weather/'+user_id )
+        axios.get('https://maxwelljonesdesign.com/weather/'+user_id )
         .then(res => {
           if(res.data){
             this.setState({currentReports: res.data});
@@ -153,7 +153,7 @@ class Board extends React.Component {
     ferterlize(weather){
         let id = weather[weather.length - 1].id;
         
-        axios.get('https://cors.bridged.cc/http://3.15.10.36/weather/fertilize/'+id )
+        axios.get('https://maxwelljonesdesign.com/weather/fertilize/'+id )
         .then(res => {
           if(res.data){
             //  console.log('good?');
@@ -166,6 +166,7 @@ class Board extends React.Component {
       this.closeModal();
     }
     tableBoard(weather){
+        weather = weather.slice(Math.max(weather.length - 8, 0))
         return (
                     weather.map(item => 
                     <Table.Row  color='blue' key={item.date}>
@@ -205,7 +206,7 @@ class Board extends React.Component {
 
         weatherItem = {id:id,high:high,low:low,fertilized:fertilized};
         
-        axios.post('https://cors.bridged.cc/http://3.15.10.36/weather/update',weatherItem)
+        axios.post('https://maxwelljonesdesign.com/weather/update',weatherItem)
         .then(res => {
           if(res.data){
              this.getData(this.props.user.id);
@@ -275,7 +276,7 @@ class Board extends React.Component {
             </div>
             
            
-                <Modal id='modal'style={{margin:'auto',width:'100%',height:'50vh'}} open={this.state.modal2}>
+                <Modal id='modal'style={{margin:'auto',width:'100%',height:'90vh'}} open={this.state.modal2}>
                     <div style={{padding:'20px'}}>
                         Fix an issue
                         <div style={{maxHeight:'60vh',overflowY:'auto',paddingTop:'20px'}}>
@@ -289,7 +290,7 @@ class Board extends React.Component {
                                 </Table.Row>
                                 </Table.Header>
                                 <Table.Body id='tbody'>
-                                    {this.state.currentWeatherReports.map(item => 
+                                    {this.state.currentWeatherReports.slice(Math.max((this.state.currentWeatherReports).length - 8, 0)).map(item => 
                                     <Table.Row  color='blue' key={item.date}>
                                         <Table.Cell id='tbody'>{item.id}</Table.Cell>
                                         <Table.Cell id='tbody'>{this.getDate(item.date)}</Table.Cell>
